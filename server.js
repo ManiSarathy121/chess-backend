@@ -23,7 +23,6 @@ wss.on('connection', ws => {
                 const sessionId = data.sessionId;
                 const username = data.username || 'Anonymous';
                 
-                // Store player info directly on the WebSocket connection object
                 ws.sessionId = sessionId;
                 ws.playerColor = 'white';
                 ws.username = username;
@@ -92,8 +91,8 @@ wss.on('connection', ws => {
                     game.players.forEach(player => {
                         if (player !== ws && player.readyState === WebSocket.OPEN) {
                             player.send(JSON.stringify({
-                                type: 'moveMade',
-                                ...data
+                                ...data,            // Spread data FIRST
+                                type: 'moveMade'    // Explicitly override type to 'moveMade' LAST
                             }));
                         }
                     });

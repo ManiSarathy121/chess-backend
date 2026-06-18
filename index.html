@@ -961,7 +961,6 @@
                         gameCtrls.style.display='flex'; initBoard();
                         break;
                     case 'moveMade':
-                        // FIX: Call applyRemote to handle full state synchronization
                         applyRemote(msg);
                         break;
                     case 'gameEnded':
@@ -1015,7 +1014,6 @@
         function updateUI() {
             if(!myColor) { gsEl.textContent='Enter name and start a game.'; return; }
             
-            // Set Player Names correctly
             const isWhite = myColor === 'white';
             p1Name.textContent = isWhite ? (myName || 'You') : (oppName || 'Opponent');
             p2Name.textContent = isWhite ? (oppName || 'Opponent') : (myName || 'You');
