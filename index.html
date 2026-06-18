@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Chess with Animations</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: hsl(220, 20%, 10%);
+            --text-color: hsl(220, 20%, 90%);
+            --primary-color: hsl(200, 70%, 60%);
+            --accent-color: hsl(160, 70%, 50%);
+            --board-light-square: hsl(30, 40%, 85%);
+            --board-dark-square: hsl(30, 20%, 65%);
+            --selected-square: hsl(40, 90%, 70%, 0.8);
+            --valid-move-square: hsl(120, 70%, 70%, 0.6);
+            --capture-square: hsl(0, 70%, 70%, 0.6);
+            --glass-bg: hsla(220, 20%, 15%, 0.6);
+            --border-color: hsla(220, 20%, 30%, 0.4);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            --font-family: 'Outfit', sans-serif;
+            --button-hover: hsl(200, 70%, 70%);
+            --status-connected: hsl(120, 70%, 50%);
+            --status-disconnected: hsl(0, 70%, 50%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(135deg, var(--bg-color) 0%, hsl(240, 25%, 15%) 100%);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .app-container {
+            background: var(--glass-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            text-align: center;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 2.5em;
+        }
+
+        .session-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            font-size: 0.95em;
+        }
+
+        .session-info p {
+            background: var(--glass-bg);
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .session-info span#sessionId {
+            font-weight: 600;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+        }
+
+        .session-info input[type="text"] {
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background-color: hsla(220, 20%, 5%, 0.5);
+            color: var(--text-color);
+            outline: none;
+            width: 180px;
+            transition: border-color 0.3s ease;
+        }
+
+        .session-info input[type="text"]::placeholder {
+            color: hsla(220, 20%, 70%, 0.7);
+        }
+
+        .session-info input[type="text"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        .session-info button {
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .session-info button:hover {
+            background-color: var(--button-hover);
+            transform: translateY(-2px);
+        }
+
+        .connection-status {
+            font-size: 0.9em;
+            margin-top: -15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .connection-status .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--status-disconnected);
+            transition: background-color 0.3s ease;
+        }
+
+        .connection-status.connected .dot {
+            background-color: var(--status-connected);
+        }
+
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .player-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 600px;
+            font-size: 1.2em;
+            font-weight: 400;
+            padding: 10px 15px;
+            background: var(--glass-bg);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .player-info .timer {
+            font-weight: 600;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+        }
+
+        .chessboard {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 1 / 1;
+            border: 5px solid var(--border-color);
+            box-shadow: var(--shadow);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .square {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3em;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .square.light { background-color: var(--board-light-square); }
+        .square.dark { background-color: var(--board-dark-square); }
+        .square.selected { background-color: var(--selected-square); }
+        .square.valid-move { background-color: var(--valid-move-square); }
+        .square.capture-move { background-color: var(--capture-square); }
+
+        .piece {
+            line-height: 1;
+            color: transparent;
+            text-shadow: 0 0 0 black;
+        }
+
+        .piece.white { text-shadow: 0 0 0 white; }
+
+        .game-status {
+            margin-top: 25px;
+            font-size: 1.5em;
+            font-weight: 600;
+            color: var(--primary-color);
+            padding: 15px 20px;
+            background: var(--glass-bg);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .animation-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: hsla(220, 20%, 5%, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-out;
+        }
+
+        .animation-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .animation-content {
+            background: var(--glass-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            padding: 40px 60px;
+            text-align: center;
+            transform: scale(0.8);
+            opacity: 0;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+
+        .animation-overlay.active .animation-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        #animationEmoji {
+            font-size: 5em;
+            display: block;
+            margin-bottom: 20px;
+            animation: pulse 1s infinite alternate;
+        }
+
+        #animationText {
+            font-size: 2em;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        @media (max-width: 768px) {
+            .app-container { padding: 20px; gap: 15px; }
+            header h1 { font-size: 2em; }
+            .session-info { flex-direction: column; align-items: center; gap: 10px; }
+            .session-info p, .session-info input, .session-info button { width: 100%; max-width: 300px; }
+            .chessboard { max-width: 90vw; border-width: 3px; }
+            .square { font-size: 2.5em; }
+            .game-status { font-size: 1.2em; padding: 10px 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Multiplayer Chess</h1>
+            <div class="session-info">
+                <p>Session ID: <span id="sessionId">N/A</span></p>
+                <button id="newGameBtn">New Game</button>
+                <input type="text" id="joinSessionId" placeholder="Enter Session ID">
+                <button id="joinGameBtn">Join Game</button>
+            </div>
+            <div id="connectionStatus" class="connection-status">
+                <span class="dot" id="statusDot"></span>
+                <span id="statusText">Connecting to server...</span>
+            </div>
+        </header>
+
+        <main class="game-area">
+            <div class="player-info player-top">
+                <span id="player2Name">Player 2 (Black)</span>
+                <span id="player2Timer" class="timer">06:00</span>
+            </div>
+            <div id="chessboard" class="chessboard"></div>
+            <div class="player-info player-bottom">
+                <span id="player1Name">Player 1 (White)</span>
+                <span id="player1Timer" class="timer">06:00</span>
+            </div>
+        </main>
+
+        <div id="gameStatus" class="game-status">Awaiting Connection</div>
+
+        <div id="animationOverlay" class="animation-overlay">
+            <div class="animation-content">
+                <span id="animationEmoji"></span>
+                <p id="animationText"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const boardElement = document.getElementById('chessboard');
+        const player1TimerElement = document.getElementById('player1Timer');
+        const player2TimerElement = document.getElementById('player2Timer');
+        const gameStatusElement = document.getElementById('gameStatus');
+        const sessionIdElement = document.getElementById('sessionId');
+        const newGameBtn = document.getElementById('newGameBtn');
+        const joinGameBtn = document.getElementById('joinGameBtn');
+        const joinSessionIdInput = document.getElementById('joinSessionId');
+        const animationOverlay = document.getElementById('animationOverlay');
+        const animationEmoji = document.getElementById('animationEmoji');
+        const animationText = document.getElementById('animationText');
+        const connectionStatusDiv = document.getElementById('connectionStatus');
+        const statusText = document.getElementById('statusText');
+
+        // --- Game State ---
+        let board = [];
+        let currentPlayer = 'white';
+        let selectedSquare = null;
+        let validMoves = [];
+        let player1Time = 360; // 6 mins
+        let player2Time = 360;
+        let timerInterval;
+        let gameActive = false;
+        let gameSessionId = null;
+        let myPlayerColor = null;
+
+        // --- Configuration ---
+        // IMPORTANT: Change this URL to your Render deployment URL (use wss:// instead of https://)
+        // Example: 'wss://my-chess-server-123.onrender.com'
+        const WEBSOCKET_SERVER_URL = 'wss://YOUR_RENDER_APP_NAME.onrender.com'; 
+
+        let ws = null;
+
+        // --- Piece Definitions ---
+        const PIECES = {
+            'p': { type: 'pawn', color: 'black', symbol: '♟️', animation: { emoji: '🗡️', text: 'Pawn charges forward!' } },
+            'r': { type: 'rook', color: 'black', symbol: '♜', animation: { emoji: '🧱', text: 'Rook fortifies the line!' } },
+            'n': { type: 'knight', color: 'black', symbol: '♞', animation: { emoji: '🐎', text: 'Knight leaps with agility!' } },
+            'b': { type: 'bishop', color: 'black', symbol: '♝', animation: { emoji: '✨', text: 'Bishop strikes with precision!' } },
+            'q': { type: 'queen', color: 'black', symbol: '♛', animation: { emoji: '👑', text: 'Queen dominates the battlefield!' } },
+            'k': { type: 'king', color: 'black', symbol: '♚', animation: { emoji: '🛡️', text: 'King stands firm!' } },
+            'P': { type: 'pawn', color: 'white', symbol: '♙', animation: { emoji: '🗡️', text: 'Pawn charges forward!' } },
+            'R': { type: 'rook', color: 'white', symbol: '♖', animation: { emoji: '🧱', text: 'Rook fortifies the line!' } },
+            'N': { type: 'knight', color: 'white', symbol: '♘', animation: { emoji: '🐎', text: 'Knight leaps with agility!' } },
+            'B': { type: 'bishop', color: 'white', symbol: '♗', animation: { emoji: '✨', text: 'Bishop strikes with precision!' } },
+            'Q': { type: 'queen', color: 'white', symbol: '♕', animation: { emoji: '👑', text: 'Queen dominates the battlefield!' } },
+            'K': { type: 'king', color: 'white', symbol: '♔', animation: { emoji: '🛡️', text: 'King stands firm!' } }
+        };
+
+        // --- Utility Functions ---
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        function generateSessionId() {
+            return Math.random().toString(36).substring(2, 9).toUpperCase();
+        }
+
+        function showAnimation(emoji, text) {
+            animationEmoji.textContent = emoji;
+            animationText.textContent = text;
+            animationOverlay.classList.add('active');
+            setTimeout(() => { animationOverlay.classList.remove('active'); }, 1500);
+        }
+
+        function updateConnectionStatus(isConnected, message = '') {
+            if (isConnected) {
+                connectionStatusDiv.classList.add('connected');
+                statusText.textContent = `Connected. ${message}`;
+            } else {
+                connectionStatusDiv.classList.remove('connected');
+                statusText.textContent = `Disconnected. ${message}`;
+            }
+        }
+
+        // --- WebSocket Handlers ---
+        function connectToServer() {
+            if (WEBSOCKET_SERVER_URL.includes('YOUR_RENDER_APP_NAME')) {
+                updateConnectionStatus(false, 'Please set the Render URL in index.html');
+                return;
+            }
+
+            ws = new WebSocket(WEBSOCKET_SERVER_URL);
+
+            ws.onopen = () => {
+                updateConnectionStatus(true, 'Ready to play.');
+            };
+
+            ws.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                
+                switch (message.type) {
+                    case 'gameCreated':
+                        gameSessionId = message.sessionId;
+                        myPlayerColor = message.playerColor;
+                        sessionIdElement.textContent = gameSessionId;
+                        alert(`Game created! Share ID: ${gameSessionId}. You are White.`);
+                        initializeBoard();
+                        break;
+                    case 'gameJoined':
+                        gameSessionId = message.sessionId;
+                        myPlayerColor = message.playerColor;
+                        sessionIdElement.textContent = gameSessionId;
+                        alert(`Joined game! You are Black.`);
+                        initializeBoard();
+                        break;
+                    case 'moveMade':
+                        applyRemoteMove(message.from, message.to, message.pieceChar, message.isCapture, message.newBoard, message.newCurrentPlayer);
+                        break;
+                    case 'playerDisconnected':
+                        gameActive = false;
+                        clearInterval(timerInterval);
+                        gameStatusElement.textContent = `Opponent disconnected.`;
+                        alert('Your opponent disconnected.');
+                        break;
+                    case 'error':
+                        alert(`Error: ${message.message}`);
+                        break;
+                }
+            };
+
+            ws.onclose = () => {
+                updateConnectionStatus(false, 'Connection lost.');
+                gameActive = false;
+                clearInterval(timerInterval);
+            };
+        }
+
+        function sendToServer(message) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify(message));
+            } else {
+                alert('Not connected to server.');
+            }
+        }
+
+        // --- Game Logic ---
+        function initializeBoard() {
+            const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+            const boardFen = fen.split(' ')[0];
+            board = [];
+            let row = 0, col = 0;
+
+            for (const char of boardFen) {
+                if (char === '/') { row++; col = 0; } 
+                else if (/\d/.test(char)) { col += parseInt(char, 10); } 
+                else {
+                    if (!board[row]) board[row] = [];
+                    board[row][col] = char;
+                    col++;
+                }
+            }
+            for (let r = 0; r < 8; r++) {
+                if (!board[r]) board[r] = [];
+                for (let c = 0; c < 8; c++) if (!board[r][c]) board[r][c] = null;
+            }
+
+            currentPlayer = 'white';
+            player1Time = 360;
+            player2Time = 360;
+            gameActive = true;
+            selectedSquare = null;
+            validMoves = [];
+            
+            updateTimers();
+            renderBoard();
+            startTimer();
+            updateGameStatusUI();
+        }
+
+        function updateGameStatusUI() {
+            if (!myPlayerColor) {
+                gameStatusElement.textContent = `Awaiting player assignment.`;
+            } else if (gameActive) {
+                const turnText = currentPlayer === myPlayerColor ? '(Your Turn)' : "(Opponent's Turn)";
+                gameStatusElement.textContent = `${currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)}'s Turn ${turnText}`;
+            }
+        }
+
+        function renderBoard() {
+            boardElement.innerHTML = '';
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const square = document.createElement('div');
+                    square.classList.add('square', (r + c) % 2 === 0 ? 'light' : 'dark');
+                    square.dataset.row = r;
+                    square.dataset.col = c;
+
+                    const pieceChar = board[r][c];
+                    if (pieceChar) {
+                        const pieceData = PIECES[pieceChar];
+                        const pieceElement = document.createElement('span');
+                        pieceElement.classList.add('piece', pieceData.color);
+                        pieceElement.textContent = pieceData.symbol;
+                        square.appendChild(pieceElement);
+                    }
+
+                    if (selectedSquare && selectedSquare.row === r && selectedSquare.col === c) square.classList.add('selected');
+                    if (validMoves.some(m => m.row === r && m.col === c && m.isCapture)) square.classList.add('capture-move');
+                    else if (validMoves.some(m => m.row === r && m.col === c)) square.classList.add('valid-move');
+
+                    square.addEventListener('click', handleSquareClick);
+                    boardElement.appendChild(square);
+                }
+            }
+        }
+
+        function handleSquareClick(event) {
+            if (!gameActive || currentPlayer !== myPlayerColor) return;
+
+            const row = parseInt(event.currentTarget.dataset.row);
+            const col = parseInt(event.currentTarget.dataset.col);
+            const pieceChar = board[row][col];
+            const clickedPiece = pieceChar ? PIECES[pieceChar] : null;
+
+            if (selectedSquare) {
+                const move = validMoves.find(m => m.row === row && m.col === col);
+                if (move) {
+                    // Create new board state to send to server
+                    let newBoard = JSON.parse(JSON.stringify(board));
+                    newBoard[row][col] = board[selectedSquare.row][selectedSquare.col];
+                    newBoard[selectedSquare.row][selectedSquare.col] = null;
+
+                    sendToServer({
+                        type: 'makeMove',
+                        sessionId: gameSessionId,
+                        playerColor: myPlayerColor,
+                        from: selectedSquare,
+                        to: { row, col },
+                        pieceChar: board[selectedSquare.row][selectedSquare.col],
+                        isCapture: move.isCapture,
+                        newBoard: newBoard
+                    });
+                    
+                    // Apply locally instantly for responsiveness
+                    applyLocalMove(selectedSquare, {row, col}, board[selectedSquare.row][selectedSquare.col], move.isCapture, newBoard);
+                    selectedSquare = null;
+                    validMoves = [];
+                } else {
+                    if (clickedPiece && clickedPiece.color === currentPlayer) {
+                        selectedSquare = { row, col };
+                        validMoves = getValidMoves(row, col);
+                        renderBoard();
+                    } else {
+                        selectedSquare = null;
+                        validMoves = [];
+                        renderBoard();
+                    }
+                }
+            } else {
+                if (clickedPiece && clickedPiece.color === currentPlayer) {
+                    selectedSquare = { row, col };
+                    validMoves = getValidMoves(row, col);
+                    renderBoard();
+                }
+            }
+        }
+
+        function applyLocalMove(from, to, pieceChar, isCapture, newBoard) {
+            const pieceData = PIECES[pieceChar];
+            showAnimation(pieceData.animation.emoji, pieceData.animation.text);
+            
+            board = newBoard; // Update local board
+            
+            // Check win condition (simplified)
+            if (isCapture && (pieceChar === 'K' || pieceChar === 'k')) {
+                gameActive = false;
+                clearInterval(timerInterval);
+                gameStatusElement.textContent = `${currentPlayer === 'white' ? 'White' : 'Black'} wins!`;
+            } else {
+                switchTurn();
+            }
+            renderBoard();
+        }
+
+        function applyRemoteMove(from, to, pieceChar, isCapture, newBoardState, newCurrentPlayer) {
+            board = newBoardState; 
+            currentPlayer = newCurrentPlayer;
+            const pieceData = PIECES[pieceChar];
+            showAnimation(pieceData.animation.emoji, pieceData.animation.text);
+            
+            if (isCapture && (pieceChar === 'K' || pieceChar === 'k')) {
+                gameActive = false;
+                clearInterval(timerInterval);
+                gameStatusElement.textContent = `${currentPlayer === 'white' ? 'Black' : 'White'} wins!`;
+            } else {
+                updateGameStatusUI();
+                startTimer();
+            }
+            renderBoard();
+        }
+
+        function switchTurn() {
+            clearInterval(timerInterval);
+            currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+            updateGameStatusUI();
+            startTimer();
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                if (!gameActive) { clearInterval(timerInterval); return; }
+
+                if (currentPlayer === 'white') {
+                    player1Time--;
+                    player1TimerElement.textContent = formatTime(player1Time);
+                    if (player1Time <= 0) { endGame('timeout', 'black'); }
+                } else {
+                    player2Time--;
+                    player2TimerElement.textContent = formatTime(player2Time);
+                    if (player2Time <= 0) { endGame('timeout', 'white'); }
+                }
+            }, 1000);
+        }
+
+        function endGame(reason, winner) {
+            clearInterval(timerInterval);
+            gameActive = false;
+            gameStatusElement.textContent = `Time's up! ${winner.charAt(0).toUpperCase() + winner.slice(1)} Wins!`;
+            alert(`Time's up! ${winner} wins.`);
+        }
+
+        function updateTimers() {
+            player1TimerElement.textContent = formatTime(player1Time);
+            player2TimerElement.textContent = formatTime(player2Time);
+        }
+
+        // --- Chess Rules (Simplified) ---
+        function isValidPosition(r, c) { return r >= 0 && r < 8 && c >= 0 && c < 8; }
+        function getPieceAt(r, c) { return isValidPosition(r, c) ? board[r][c] : null; }
+
+        function getValidMoves(r, c) {
+            const pieceChar = board[r][c];
+            if (!pieceChar) return [];
+            const pieceData = PIECES[pieceChar];
+            const moves = [];
+
+            switch (pieceData.type) {
+                case 'pawn': getPawnMoves(r, c, pieceData.color, moves); break;
+                case 'rook': getSlidingMoves(r, c, pieceData.color, [[-1, 0], [1, 0], [0, -1], [0, 1]], moves); break;
+                case 'knight': getKnightMoves(r, c, pieceData.color, moves); break;
+                case 'bishop': getSlidingMoves(r, c, pieceData.color, [[-1, -1], [-1, 1], [1, -1], [1, 1]], moves); break;
+                case 'queen': getSlidingMoves(r, c, pieceData.color, [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1]], moves); break;
+                case 'king': getKingMoves(r, c, pieceData.color, moves); break;
+            }
+            return moves;
+        }
+
+        function addMoveIfValid(r, c, targetR, targetC, pieceColor, moves, isCapture = false) {
+            if (!isValidPosition(targetR, targetC)) return;
+            const targetPieceChar = getPieceAt(targetR, targetC);
+            const targetPieceData = targetPieceChar ? PIECES[targetPieceChar] : null;
+            if (targetPieceData && targetPieceData.color === pieceColor) return;
+            moves.push({ row: targetR, col: targetC, isCapture: !!targetPieceData });
+        }
+
+        function getPawnMoves(r, c, color, moves) {
+            const dir = color === 'white' ? -1 : 1;
+            const startRow = color === 'white' ? 6 : 1;
+            if (!getPieceAt(r + dir, c)) addMoveIfValid(r, c, r + dir, c, color, moves);
+            if (r === startRow && !getPieceAt(r + dir, c) && !getPieceAt(r + 2 * dir, c)) addMoveIfValid(r, c, r + 2 * dir, c, color, moves);
+            const caps = [[r + dir, c - 1], [r + dir, c + 1]];
+            for (const [tr, tc] of caps) {
+                if (isValidPosition(tr, tc)) {
+                    const tpc = getPieceAt(tr, tc);
+                    if (tpc && PIECES[tpc].color !== color) addMoveIfValid(r, c, tr, tc, color, moves, true);
+                }
+            }
+        }
+
+        function getSlidingMoves(r, c, color, dirs, moves) {
+            for (const [dr, dc] of dirs) {
+                for (let i = 1; i < 8; i++) {
+                    const tr = r + dr * i, tc = c + dc * i;
+                    if (!isValidPosition(tr, tc)) break;
+                    const tpc = getPieceAt(tr, tc);
+                    if (tpc) {
+                        if (PIECES[tpc].color !== color) addMoveIfValid(r, c, tr, tc, color, moves, true);
+                        break;
+                    } else addMoveIfValid(r, c, tr, tc, color, moves);
+                }
+            }
+        }
+
+        function getKnightMoves(r, c, color, moves) {
+            const knMoves = [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]];
+            for (const [dr, dc] of knMoves) addMoveIfValid(r, c, r + dr, c + dc, color, moves);
+        }
+
+        function getKingMoves(r, c, color, moves) {
+            const kMoves = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+            for (const [dr, dc] of kMoves) addMoveIfValid(r, c, r + dr, c + dc, color, moves);
+        }
+
+        // --- UI Actions ---
+        newGameBtn.addEventListener('click', () => {
+            if (ws && ws.readyState === WebSocket.OPEN) sendToServer({ type: 'createGame', sessionId: generateSessionId() });
+            else alert('Not connected to server.');
+        });
+
+        joinGameBtn.addEventListener('click', () => {
+            const id = joinSessionIdInput.value.trim();
+            if (id && ws && ws.readyState === WebSocket.OPEN) sendToServer({ type: 'joinGame', sessionId: id });
+            else alert('Enter ID or connect to server.');
+        });
+
+        // Init
+        connectToServer();
+    </script>
+</body>
+</html>
