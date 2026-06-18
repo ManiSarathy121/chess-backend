@@ -26,8 +26,6 @@
             --button-hover: hsl(200, 70%, 70%);
             --status-connected: hsl(120, 70%, 50%);
             --status-disconnected: hsl(0, 70%, 50%);
-            --move-white-bg: hsla(0, 0%, 100%, 0.05);
-            --move-black-bg: transparent;
             --sidebar-width: 280px;
         }
 
@@ -53,7 +51,6 @@
             align-items: flex-start;
         }
 
-        /* Main Game Area */
         .game-main {
             flex: 1;
             min-width: 0;
@@ -154,7 +151,6 @@
         }
         .connection-status.connected .dot { background-color: var(--status-connected); }
 
-        /* Player Info */
         .player-info {
             display: flex;
             justify-content: space-between;
@@ -179,7 +175,7 @@
         }
         .player-info .player-name .player-icon { font-size: 1.3em; }
         .player-info .player-name .player-label {
-            font-size: 0.7em;
+            font-size: 0.75em;
             color: hsla(220, 20%, 70%, 0.6);
             font-weight: 400;
         }
@@ -193,9 +189,7 @@
             color: var(--danger-color);
             animation: blink 0.8s infinite;
         }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-        /* Board */
         .board-wrapper {
             display: flex;
             justify-content: center;
@@ -238,7 +232,6 @@
         }
         .square.capture-move { background-color: var(--capture-square) !important; }
         .square.in-check { background-color: var(--check-square) !important; animation: pulse-check 1s infinite; }
-        @keyframes pulse-check { 0%,100%{opacity:1} 50%{opacity:0.6} }
         .square.last-move-from { background-color: hsla(50, 90%, 60%, 0.3) !important; }
         .square.last-move-to { background-color: hsla(50, 90%, 60%, 0.4) !important; }
 
@@ -248,12 +241,9 @@
             text-shadow: 0 0 0 black;
             pointer-events: none;
             z-index: 2;
-            transition: transform 0.1s ease;
         }
         .piece.white { text-shadow: 0 0 0 white; }
-        .square.selected .piece { transform: scale(1.15); }
 
-        /* File and rank labels */
         .square .rank-label,
         .square .file-label {
             position: absolute;
@@ -264,12 +254,7 @@
         }
         .square .file-label { bottom: 2px; right: 4px; }
         .square .rank-label { top: 2px; left: 4px; }
-        .square.dark .rank-label,
-        .square.dark .file-label { color: var(--board-light-square); }
-        .square.light .rank-label,
-        .square.light .file-label { color: var(--board-dark-square); }
 
-        /* Controls */
         .game-controls {
             display: flex;
             gap: 12px;
@@ -300,19 +285,8 @@
             border: 1px solid var(--border-color);
             text-align: center;
         }
-        .game-status.game-over {
-            color: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-        .game-status small {
-            display: block;
-            font-size: 0.7em;
-            font-weight: 400;
-            color: hsla(220, 20%, 70%, 0.7);
-            margin-top: 4px;
-        }
+        .game-status.game-over { color: var(--accent-color); border-color: var(--accent-color); }
 
-        /* Sidebar - Move History */
         .sidebar {
             width: var(--sidebar-width);
             flex-shrink: 0;
@@ -323,17 +297,13 @@
             top: 20px;
             max-height: calc(100vh - 40px);
         }
-
         .sidebar .glass-box {
             background: var(--glass-bg-strong);
             border-radius: 16px;
             border: 1px solid var(--border-color);
             box-shadow: var(--shadow);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             padding: 18px;
         }
-
         .sidebar h3 {
             color: var(--primary-color);
             font-weight: 600;
@@ -348,49 +318,23 @@
             padding: 2px 8px;
             border-radius: 8px;
             font-size: 0.7em;
-            font-weight: 400;
             color: hsla(220, 20%, 80%, 0.7);
         }
 
         .move-history-container {
             max-height: 400px;
             overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: var(--border-color) transparent;
         }
-        .move-history-container::-webkit-scrollbar { width: 4px; }
-        .move-history-container::-webkit-scrollbar-track { background: transparent; }
-        .move-history-container::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
-
-        .move-history-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        .move-history-table { width: 100%; border-collapse: collapse; }
         .move-history-table td {
-            padding: 4px 8px;
+            padding: 6px 8px;
             font-size: 0.85em;
-            font-weight: 400;
             border-bottom: 1px solid hsla(220, 20%, 20%, 0.3);
         }
-        .move-history-table .move-number {
-            color: hsla(220, 20%, 70%, 0.5);
-            width: 30px;
-            text-align: right;
-            font-weight: 300;
-        }
-        .move-history-table .move-white {
-            width: 110px;
-        }
-        .move-history-table .move-black {
-            width: 110px;
-        }
-        .move-history-table .move-white,
-        .move-history-table .move-black {
+        .move-history-table .move-number { color: hsla(220, 20%, 70%, 0.5); width: 30px; }
+        .move-history-table .move-white, .move-history-table .move-black {
             font-family: 'Courier New', monospace;
-            letter-spacing: 0.5px;
-        }
-        .move-history-table tr:hover td {
-            background: hsla(200, 70%, 60%, 0.05);
+            width: 110px;
         }
 
         .no-moves {
@@ -401,9 +345,7 @@
             font-style: italic;
         }
 
-        .game-info-sidebar {
-            font-size: 0.85em;
-        }
+        .game-info-sidebar { font-size: 0.85em; }
         .game-info-sidebar .info-row {
             display: flex;
             justify-content: space-between;
@@ -414,7 +356,6 @@
         .game-info-sidebar .info-label { color: hsla(220, 20%, 70%, 0.6); }
         .game-info-sidebar .info-value { color: var(--accent-color); font-weight: 600; }
 
-        /* Waiting Overlay */
         .waiting-overlay {
             position: fixed;
             top: 0; left: 0;
@@ -441,12 +382,7 @@
             transition: transform 0.3s ease-out, opacity 0.3s ease-out;
         }
         .waiting-overlay.active .waiting-content { transform: scale(1); opacity: 1; }
-        .waiting-content h2 {
-            font-size: 1.6em;
-            color: var(--primary-color);
-            margin-bottom: 12px;
-        }
-        .waiting-content p { font-size: 1em; margin-bottom: 12px; }
+        .waiting-content h2 { font-size: 1.6em; color: var(--primary-color); margin-bottom: 12px; }
         .waiting-content .session-id-display {
             background: hsla(220, 20%, 5%, 0.5);
             padding: 12px 24px;
@@ -467,11 +403,6 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        .waiting-content .copy-btn:hover {
-            background-color: var(--button-hover);
-            transform: translateY(-2px);
         }
         .spinner {
             width: 36px; height: 36px;
@@ -483,7 +414,6 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Animation Overlay */
         .animation-overlay {
             position: fixed;
             top: 0; left: 0;
@@ -510,72 +440,16 @@
             transition: transform 0.3s ease-out, opacity 0.3s ease-out;
         }
         .animation-overlay.active .animation-content { transform: scale(1); opacity: 1; }
-        #animationEmoji { font-size: 4em; display: block; margin-bottom: 12px; animation: pulse-emoji 0.5s infinite alternate; }
+        #animationEmoji { font-size: 4em; display: block; margin-bottom: 12px; }
         #animationText { font-size: 1.6em; font-weight: 600; color: var(--accent-color); }
-        @keyframes pulse-emoji { from { transform: scale(1); } to { transform: scale(1.1); } }
-
-        /* Promotion Modal */
-        .promotion-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background-color: hsla(0, 0%, 0%, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
-        }
-        .promotion-overlay.active { opacity: 1; pointer-events: all; }
-        .promotion-content {
-            background: var(--glass-bg-strong);
-            border-radius: 16px;
-            border: 2px solid var(--primary-color);
-            padding: 20px 30px;
-            text-align: center;
-        }
-        .promotion-content h3 {
-            color: var(--primary-color);
-            margin-bottom: 15px;
-            font-size: 1.1em;
-        }
-        .promotion-options {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-        }
-        .promotion-options button {
-            font-size: 2.5em;
-            padding: 10px 18px;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            background: hsla(220, 20%, 20%, 0.5);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .promotion-options button:hover {
-            border-color: var(--accent-color);
-            transform: scale(1.1);
-            background: hsla(220, 20%, 30%, 0.5);
-        }
 
         @media (max-width: 900px) {
             .app-container { flex-direction: column; align-items: center; }
-            .sidebar {
-                width: 100%;
-                position: static;
-                max-height: none;
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-            .sidebar .glass-box { flex: 1; min-width: 250px; }
-            .move-history-container { max-height: 250px; }
+            .sidebar { width: 100%; position: static; max-height: none; }
             .chessboard { max-width: 100%; }
             .square { font-size: 2.2em; }
             .session-info { flex-direction: column; align-items: center; }
-            .session-info input, .session-info button, .session-info p { width: 100%; max-width: 280px; }
+            .session-info input, .session-info button { width: 100%; max-width: 280px; }
         }
     </style>
 </head>
@@ -600,6 +474,7 @@
                 </div>
             </header>
 
+            <!-- Player 2 (Black) Info -->
             <div class="player-info player-top" id="player2Info">
                 <div class="player-name">
                     <span class="player-icon">♟️</span>
@@ -615,6 +490,7 @@
                 <div id="chessboard" class="chessboard"></div>
             </div>
 
+            <!-- Player 1 (White) Info -->
             <div class="player-info player-bottom" id="player1Info">
                 <div class="player-name">
                     <span class="player-icon">♙</span>
@@ -629,12 +505,10 @@
             <div class="game-controls" id="gameControls" style="display:none;">
                 <button class="btn-end-game" id="endGameBtn">🛑 End Game</button>
                 <button class="btn-resign" id="resignBtn">🏳️ Resign</button>
-                <button id="undoBtn" style="background-color:hsla(220,20%,30%,0.5);color:var(--text-color);">↩ Offer Draw</button>
             </div>
 
             <div id="gameStatus" class="game-status">
                 Enter your name and create/join a game
-                <small>Play with full chess rules</small>
             </div>
         </div>
 
@@ -660,7 +534,7 @@
             </div>
         </div>
 
-        <!-- Modals -->
+        <!-- Waiting Overlay -->
         <div id="waitingOverlay" class="waiting-overlay">
             <div class="waiting-content">
                 <h2>⏳ Waiting for opponent...</h2>
@@ -669,22 +543,14 @@
                 <br>
                 <button class="copy-btn" id="copySessionBtn">📋 Copy Code</button>
                 <div class="spinner"></div>
-                <p style="font-size:0.85em;color:hsla(220,20%,70%,0.6);">Game starts automatically when they join</p>
             </div>
         </div>
 
+        <!-- Animation Overlay -->
         <div id="animationOverlay" class="animation-overlay">
             <div class="animation-content">
                 <span id="animationEmoji"></span>
                 <p id="animationText"></p>
-            </div>
-        </div>
-
-        <div id="promotionOverlay" class="promotion-overlay">
-            <div class="promotion-content">
-                <h3>♛ Promote Pawn</h3>
-                <p style="font-size:0.85em;margin-bottom:12px;color:hsla(220,20%,70%,0.7);">Choose a piece:</p>
-                <div class="promotion-options" id="promotionOptions"></div>
             </div>
         </div>
     </div>
@@ -725,14 +591,12 @@
         const infoBlack = document.getElementById('infoBlack');
         const infoLastMove = document.getElementById('infoLastMove');
         const infoCheck = document.getElementById('infoCheck');
-        const promOverlay = document.getElementById('promotionOverlay');
-        const promOptions = document.getElementById('promotionOptions');
 
         // ===================== STATE =====================
-        let board = [];         // 8x8 char array
+        let board = [];
         let currentPlayer = 'white';
-        let selected = null;    // {row, col}
-        let validMoves = [];    // [{row, col, flags}]
+        let selected = null;
+        let validMoves = [];
         let p1Time = 360, p2Time = 360;
         let timerInt = null;
         let gameActive = false;
@@ -740,41 +604,33 @@
         let myColor = null;
         let myName = '';
         let oppName = '';
-        let moveHistory = [];   // [{number, white, black, whiteSquares, blackSquares}]
-        let lastMove = null;    // {from: {r,c}, to: {r,c}}
-        let enPassantTarget = null; // {row, col} or null
+        let moveHistory = [];
+        let lastMove = null;
+        let enPassantTarget = null;
         let castlingRights = {
             white: { kingSide: true, queenSide: true },
             black: { kingSide: true, queenSide: true }
         };
         let ws = null;
-        let pendingPromotion = null; // {from, to, boardCopy} waiting for piece choice
 
         // ===================== CONFIG =====================
         const WS_URL = 'wss://chess-backend-axfc.onrender.com';
 
         // ===================== PIECE DATA =====================
         const PIECES = {
-            'p':{type:'pawn',color:'black',sym:'♟️',anim:{e:'🗡️',t:'Pawn charges forward!'}},
-            'r':{type:'rook',color:'black',sym:'♜',anim:{e:'🧱',t:'Rook fortifies!'}},
-            'n':{type:'knight',color:'black',sym:'♞',anim:{e:'🐎',t:'Knight leaps!'}},
-            'b':{type:'bishop',color:'black',sym:'♝',anim:{e:'✨',t:'Bishop strikes!'}},
-            'q':{type:'queen',color:'black',sym:'♛',anim:{e:'👑',t:'Queen dominates!'}},
-            'k':{type:'king',color:'black',sym:'♚',anim:{e:'🛡️',t:'King stands firm!'}},
-            'P':{type:'pawn',color:'white',sym:'♙',anim:{e:'🗡️',t:'Pawn charges forward!'}},
-            'R':{type:'rook',color:'white',sym:'♖',anim:{e:'🧱',t:'Rook fortifies!'}},
-            'N':{type:'knight',color:'white',sym:'♘',anim:{e:'🐎',t:'Knight leaps!'}},
-            'B':{type:'bishop',color:'white',sym:'♗',anim:{e:'✨',t:'Bishop strikes!'}},
-            'Q':{type:'queen',color:'white',sym:'♕',anim:{e:'👑',t:'Queen dominates!'}},
-            'K':{type:'king',color:'white',sym:'♔',anim:{e:'🛡️',t:'King stands firm!'}}
+            'p':{type:'pawn',color:'black',sym:'♟️',anim:{e:'🗡️',t:'Pawn charges forward with a sword!'}},
+            'r':{type:'rook',color:'black',sym:'♜',anim:{e:'🧱',t:'Rook smashes through the line!'}},
+            'n':{type:'knight',color:'black',sym:'♞',anim:{e:'🐎',t:'Knight leaps swiftly!'}},
+            'b':{type:'bishop',color:'black',sym:'♝',anim:{e:'✨',t:'Bishop strikes with clever magic!'}},
+            'q':{type:'queen',color:'black',sym:'♛',anim:{e:'👑',t:'Queen dominates the battlefield!'}},
+            'k':{type:'king',color:'black',sym:'♚',anim:{e:'🛡️',t:'King commands authority!'}},
+            'P':{type:'pawn',color:'white',sym:'♙',anim:{e:'🗡️',t:'Pawn charges forward with a sword!'}},
+            'R':{type:'rook',color:'white',sym:'♖',anim:{e:'🧱',t:'Rook smashes through the line!'}},
+            'N':{type:'knight',color:'white',sym:'♘',anim:{e:'🐎',t:'Knight leaps swiftly!'}},
+            'B':{type:'bishop',color:'white',sym:'♗',anim:{e:'✨',t:'Bishop strikes with clever magic!'}},
+            'Q':{type:'queen',color:'white',sym:'♕',anim:{e:'👑',t:'Queen dominates the battlefield!'}},
+            'K':{type:'king',color:'white',sym:'♔',anim:{e:'🛡️',t:'King commands authority!'}}
         };
-
-        const PROMO_PIECES = [
-            {char:'Q',sym:'♕',label:'Queen'},
-            {char:'R',sym:'♜',label:'Rook'},
-            {char:'B',sym:'♝',label:'Bishop'},
-            {char:'N',sym:'♞',label:'Knight'}
-        ];
 
         const FILES = 'abcdefgh';
         const RANKS = '87654321';
@@ -787,7 +643,6 @@
         function genId() { return Math.random().toString(36).substring(2,9).toUpperCase(); }
         function inBounds(r,c) { return r>=0 && r<8 && c>=0 && c<8; }
         function getPC(r,c) { return inBounds(r,c) ? board[r][c] : null; }
-        function getPD(r,c) { const ch=getPC(r,c); return ch ? PIECES[ch] : null; }
         function getColor(ch) { return ch === ch.toUpperCase() ? 'white' : 'black'; }
         function sqName(r,c) { return FILES[c] + RANKS[r]; }
 
@@ -803,11 +658,9 @@
         }
 
         function waitShow(show) { waitOverlay.classList.toggle('active',show); }
-
         function toAlg(r,c) { return FILES[c] + RANKS[r]; }
 
-        // ===================== FULL CHESS RULES =====================
-
+        // ===================== CHESS RULES =====================
         function cloneBoard(b) { return b.map(r=>[...r]); }
 
         function findKing(color, b) {
@@ -817,7 +670,6 @@
         }
 
         function isSquareAttacked(r, c, byColor, b) {
-            // Check all enemy pieces if they can attack (r,c)
             for(let i=0;i<8;i++) for(let j=0;j<8;j++) {
                 const ch = b[i][j];
                 if(!ch) continue;
@@ -847,18 +699,15 @@
                 case 'pawn': {
                     const dir = col==='white' ? -1 : 1;
                     const start = col==='white' ? 6 : 1;
-                    // forward
                     if(inBounds(r+dir,c) && !b[r+dir][c]) {
                         moves.push({r:r+dir,c,flags:{}});
                         if(r===start && !b[r+2*dir][c]) moves.push({r:r+2*dir,c,flags:{}});
                     }
-                    // captures
                     for(const dc of [-1,1]) {
                         const nr=r+dir, nc=c+dc;
                         if(!inBounds(nr,nc)) continue;
                         const t=b[nr][nc];
                         if(t && getColor(t)!==col) moves.push({r:nr,c:nc,flags:{capture:true}});
-                        // en passant
                         if(enPassantTarget && enPassantTarget.r===nr && enPassantTarget.c===nc)
                             moves.push({r:nr,c:nc,flags:{enpassant:true}});
                     }
@@ -960,11 +809,9 @@
         }
 
         function getAttacks(r,c,type,color,b) {
-            // Returns list of squares attacked (not considering board boundaries fully)
             let moves = [];
             const pseudo = getPseudoMoves(r,c,b);
             for(const m of pseudo) {
-                // For pawn captures only
                 if(type==='pawn') {
                     const dir=color==='white'?-1:1;
                     for(const dc of [-1,1]) {
@@ -975,13 +822,9 @@
                     moves.push({r:m.r,c:m.c});
                 }
             }
-            // Actually re-use getPseudoMoves but filter properly
-            // For attack detection, we need a simpler version
-            // Let's just use getPseudoMoves and convert
             const atk=[];
             for(const m of pseudo) {
                 if(type==='pawn') {
-                    // only diagonal captures
                     const dir=color==='white'?-1:1;
                     for(const dc of [-1,1]) {
                         const nr=r+dir, nc=c+dc;
@@ -1002,16 +845,12 @@
             const legal = [];
 
             for(const m of pseudo) {
-                // Try move
                 const nb = cloneBoard(b);
-                // Execute move
                 nb[m.r][m.c] = nb[r][c];
                 nb[r][c] = null;
-                // En passant capture
                 if(m.flags.enpassant && enPassantTarget) {
-                    nb[r][m.c] = null; // capture pawn
+                    nb[r][m.c] = null;
                 }
-                // Castling - move rook
                 if(m.flags.castle) {
                     if(m.flags.castle==='king') {
                         nb[m.r][m.c-1] = nb[m.r][7];
@@ -1021,7 +860,6 @@
                         nb[m.r][0] = null;
                     }
                 }
-                // Check if own king is in check after move
                 if(!isInCheck(col, nb)) {
                     legal.push(m);
                 }
@@ -1048,14 +886,7 @@
             return isInCheck(color,b) && !hasLegalMoves(color,b);
         }
 
-        function isStalemate(color,b) {
-            return !isInCheck(color,b) && !hasLegalMoves(color,b);
-        }
-
-        // ===================== ALGEBRAIC NOTATION =====================
-
         function moveToAlgebraic(from, to, ch, flags, promotionPiece) {
-            // ch = piece char before move
             const pd = PIECES[ch];
             const type = pd.type;
             const col = getColor(ch);
@@ -1076,9 +907,7 @@
                 }
             } else {
                 const sym = type==='knight'?'N':type==='bishop'?'B':type==='rook'?'R':type==='queen'?'Q':type==='king'?'K':'';
-                // Disambiguation (simplified)
                 let disambig = '';
-                // Check if another piece of same type can move to same square
                 for(let r=0;r<8;r++) for(let c=0;c<8;c++) {
                     if(r===from.r && c===from.c) continue;
                     const ch2 = board[r][c];
@@ -1087,11 +916,8 @@
                     if(PIECES[ch2].type!==type) continue;
                     const moves2 = getLegalMoves(r,c);
                     if(moves2.some(m=>m.r===to.r && m.c===to.c)) {
-                        // Need disambiguation
                         if(!disambig) disambig = FILES[from.c];
                         if(disambig.length===1) {
-                            // Check if file is enough
-                            // If there's another with same file, use rank
                             const sameFile = board.some((row,ri)=>row.some((cell,ci)=>{
                                 if(ri===from.r && ci===from.c) return false;
                                 if(!cell) return false;
@@ -1106,14 +932,11 @@
                 }
                 notation = sym + disambig + (flags.capture?'x':'') + dest;
             }
-
-            // Check/checkmate symbols are added after
             return {notation, check:false, checkmate:false};
         }
 
         // ===================== WEB SOCKET =====================
         function connect() {
-            if(WS_URL.includes('YOUR_RENDER')) { connStatus(false,'Set URL'); return; }
             ws = new WebSocket(WS_URL);
             ws.onopen = ()=>{ connStatus(true,'Ready.'); };
             ws.onmessage = (e)=>{
@@ -1124,21 +947,21 @@
                         sidEl.textContent=sessionId; waitSid.textContent=sessionId;
                         waitShow(true); gameCtrls.style.display='none';
                         gsEl.textContent='Waiting for opponent...';
-                        gsEl.classList.remove('game-over');
                         infoStatus.textContent='Waiting...';
                         break;
                     case 'opponentJoined':
                         oppName=msg.opponentName;
                         waitShow(false); gameCtrls.style.display='flex';
-                        initBoard(); updateUI();
+                        initBoard(); 
                         break;
                     case 'gameJoined':
                         sessionId=msg.sessionId; myColor=msg.playerColor;
                         oppName=msg.opponentName;
                         sidEl.textContent=sessionId; waitShow(false);
-                        gameCtrls.style.display='flex'; initBoard(); updateUI();
+                        gameCtrls.style.display='flex'; initBoard();
                         break;
                     case 'moveMade':
+                        // FIX: Call applyRemote to handle full state synchronization
                         applyRemote(msg);
                         break;
                     case 'gameEnded':
@@ -1148,7 +971,6 @@
                         if(msg.reason==='resigned') gsEl.textContent=`${msg.winner} wins! ${msg.loser} resigned.`;
                         else if(msg.reason==='ended') gsEl.textContent=`${msg.endedBy} ended the game.`;
                         else if(msg.reason==='timeout') gsEl.textContent=`Time's up! ${msg.winner} wins!`;
-                        else gsEl.textContent=`Game over. ${msg.winner} wins!`;
                         alert(gsEl.textContent);
                         infoStatus.textContent='Game Over';
                         break;
@@ -1192,11 +1014,14 @@
 
         function updateUI() {
             if(!myColor) { gsEl.textContent='Enter name and start a game.'; return; }
-            const me = myColor==='white'?1:2, opp = myColor==='white'?2:1;
-            document.getElementById(`player${me}Name`).textContent=myName||'You';
-            document.getElementById(`player${opp}Name`).textContent=oppName||'Opponent';
-            infoWhite.textContent=myColor==='white'?(myName||'You'):(oppName||'Opponent');
-            infoBlack.textContent=myColor==='black'?(myName||'You'):(oppName||'Opponent');
+            
+            // Set Player Names correctly
+            const isWhite = myColor === 'white';
+            p1Name.textContent = isWhite ? (myName || 'You') : (oppName || 'Opponent');
+            p2Name.textContent = isWhite ? (oppName || 'Opponent') : (myName || 'You');
+
+            infoWhite.textContent = isWhite ? (myName || 'You') : (oppName || 'Opponent');
+            infoBlack.textContent = isWhite ? (oppName || 'Opponent') : (myName || 'You');
 
             if(!gameActive) return;
             const isMyTurn = currentPlayer===myColor;
@@ -1208,11 +1033,8 @@
             p1Info.classList.toggle('active-turn', currentPlayer==='white');
             p2Info.classList.toggle('active-turn', currentPlayer==='black');
 
-            // Check info
-            if(gameActive) {
-                const inCheck = isInCheck(currentPlayer, board);
-                infoCheck.textContent = inCheck ? '⚠️ Yes!' : 'No';
-            }
+            const inCheck = isInCheck(currentPlayer, board);
+            infoCheck.textContent = inCheck ? '⚠️ Yes!' : 'No';
         }
 
         function render() {
@@ -1231,7 +1053,6 @@
                     sq.appendChild(p);
                 }
 
-                // Labels
                 if(c===0) {
                     const lbl = document.createElement('span');
                     lbl.className='rank-label'; lbl.textContent=RANKS[r];
@@ -1243,18 +1064,15 @@
                     sq.appendChild(lbl);
                 }
 
-                // Highlights
                 if(selected && selected.r===r && selected.c===c) sq.classList.add('selected');
                 if(validMoves.some(m=>m.r===r && m.c===c && m.flags.capture)) sq.classList.add('capture-move');
                 else if(validMoves.some(m=>m.r===r && m.c===c)) sq.classList.add('valid-move');
 
-                // Last move highlight
                 if(lastMove) {
                     if(lastMove.from.r===r && lastMove.from.c===c) sq.classList.add('last-move-from');
                     if(lastMove.to.r===r && lastMove.to.c===c) sq.classList.add('last-move-to');
                 }
 
-                // Check highlight
                 if(gameActive) {
                     const kCh = currentPlayer==='white'?'K':'k';
                     if(board[r][c]===kCh && isInCheck(currentPlayer, board)) sq.classList.add('in-check');
@@ -1273,7 +1091,6 @@
             if(selected) {
                 const move = validMoves.find(m=>m.r===r && m.c===c);
                 if(move) {
-                    // Execute move
                     executeMove(selected.r, selected.c, r, c, move.flags);
                     selected=null; validMoves=[];
                 } else {
@@ -1295,31 +1112,22 @@
             const pd = PIECES[ch];
             const col = getColor(ch);
 
-            // Show animation
             showAnim(pd.anim.e, pd.anim.t);
 
-            // Save for notation
             const from = {r:fr, c:fc};
             const to = {r:tr, c:tc};
             let promoPiece = null;
 
-            // Pawn promotion
             if(pd.type==='pawn' && (tr===0 || tr===7)) {
-                // Default to Queen for now, but we'll show modal
-                // Actually for online, we need to handle this specially
-                // For simplicity, auto-promote to Queen
                 promoPiece = col==='white'?'Q':'q';
             }
 
-            // Build new board
             let newBoard = cloneBoard(board);
 
-            // Capture en passant
             if(flags.enpassant) {
-                newBoard[fr][tc] = null; // capture the pawn
+                newBoard[fr][tc] = null;
             }
 
-            // Castle - move rook
             if(flags.castle) {
                 if(flags.castle==='king') {
                     newBoard[tr][tc-1] = newBoard[tr][7];
@@ -1330,14 +1138,11 @@
                 }
             }
 
-            // Move piece
             newBoard[tr][tc] = (promoPiece ? promoPiece.toUpperCase() : ch);
             newBoard[fr][fc] = null;
 
-            // Update en passant target
             const newEP = (pd.type==='pawn' && Math.abs(tr-fr)===2) ? {r:(fr+tr)/2, c:fc} : null;
 
-            // Update castling rights
             const newCR = JSON.parse(JSON.stringify(castlingRights));
             if(ch==='K' || ch==='k') {
                 if(col==='white') { newCR.white.kingSide=false; newCR.white.queenSide=false; }
@@ -1349,20 +1154,16 @@
                 if(fr===0 && fc===0) newCR.black.queenSide=false;
                 if(fr===0 && fc===7) newCR.black.kingSide=false;
             }
-            // If rook captured
             if(tr===7 && tc===0) newCR.white.queenSide=false;
             if(tr===7 && tc===7) newCR.white.kingSide=false;
             if(tr===0 && tc===0) newCR.black.queenSide=false;
             if(tr===0 && tc===7) newCR.black.kingSide=false;
 
-            // Calculate notation
             const notResult = moveToAlgebraic(from, to, ch, flags, promoPiece);
             let notation = notResult.notation;
 
-            // Determine next player
             const nextPlayer = col==='white'?'black':'white';
 
-            // Check for check/checkmate after move
             const inCheckNext = isInCheck(nextPlayer, newBoard);
             const checkmateNext = inCheckNext && !hasLegalMoves(nextPlayer, newBoard);
             const stalemateNext = !inCheckNext && !hasLegalMoves(nextPlayer, newBoard);
@@ -1370,7 +1171,6 @@
             if(checkmateNext) notation += '#';
             else if(inCheckNext) notation += '+';
 
-            // Send to server
             send({
                 type: 'makeMove',
                 sessionId,
@@ -1391,7 +1191,6 @@
                 gameOver: checkmateNext || stalemateNext
             });
 
-            // Apply locally
             applyLocalMove({from, to, ch, flags, promoPiece, newBoard, nextPlayer, notation, newEP, newCR, inCheckNext, checkmateNext, stalemateNext});
         }
 
@@ -1404,12 +1203,9 @@
             castlingRights = newCR;
             lastMove = {from, to};
 
-            // Add to move history
-            const pdi = PIECES[ch];
             const moveNum = Math.floor(moveHistory.length/2)+1;
             const isWhite = getColor(ch)==='white';
 
-            // Determine if game over
             if(checkmateNext || stalemateNext) {
                 gameActive = false;
                 clearInterval(timerInt);
@@ -1419,15 +1215,12 @@
                     const winner = currentPlayer==='white'?'Black':'White';
                     gsEl.textContent = `Checkmate! ${winner} wins!`;
                     infoStatus.textContent = `Checkmate! ${winner} wins`;
-                    alert(`Checkmate! ${winner} wins!`);
                 } else {
                     gsEl.textContent = `Stalemate! Draw.`;
                     infoStatus.textContent = 'Stalemate - Draw';
-                    alert('Stalemate! The game is a draw.');
                 }
             }
 
-            // Store move
             if(isWhite) {
                 moveHistory.push({number: moveNum, white: notation, whiteSquares: {from, to}, black: '', blackSquares: null});
             } else {
@@ -1454,7 +1247,7 @@
 
             board = newBoard;
             currentPlayer = nextPlayer;
-            if(ep) enPassantTarget = ep;
+            enPassantTarget = ep;
             if(cr) castlingRights = cr;
             lastMove = {from, to};
 
@@ -1466,7 +1259,6 @@
                 clearInterval(timerInt);
                 gameCtrls.style.display = 'none';
                 gsEl.classList.add('game-over');
-                // Determine status from board
                 const inCheck = isInCheck(currentPlayer, board);
                 const noMoves = !hasLegalMoves(currentPlayer, board);
                 if(inCheck && noMoves) {
@@ -1493,13 +1285,6 @@
             render();
             updateUI();
             updateSidebar();
-            startTimer();
-        }
-
-        function switchTurn() {
-            clearInterval(timerInt);
-            currentPlayer = currentPlayer==='white'?'black':'white';
-            updateUI();
             startTimer();
         }
 
@@ -1563,11 +1348,9 @@
                 tr.appendChild(tdB);
                 moveBody.appendChild(tr);
             }
-            // Scroll to bottom
             const container = document.getElementById('moveHistoryContainer');
             container.scrollTop = container.scrollHeight;
 
-            // Update last move info
             const last = moveHistory[moveHistory.length-1];
             const lastNot = last.black || last.white;
             infoLastMove.textContent = lastNot || '-';
@@ -1575,12 +1358,12 @@
 
         // ===================== EVENT LISTENERS =====================
         newGameBtn.addEventListener('click',()=>{
-            myName = nameInput.value.trim() || 'Anonymous';
-            if(!ws || ws.readyState!==WebSocket.OPEN) { alert('Not connected.'); return; }
+            myName = nameInput.value.trim() || 'Player 1';
+            if(!ws || ws.readyState!==WebSocket.OPEN) { alert('Not connected to server.'); return; }
             send({type:'createGame', sessionId:genId(), username:myName});
         });
         joinGameBtn.addEventListener('click',()=>{
-            myName = nameInput.value.trim() || 'Anonymous';
+            myName = nameInput.value.trim() || 'Player 2';
             const id = joinIdInput.value.trim();
             if(!id || !ws || ws.readyState!==WebSocket.OPEN) { alert('Enter room code and connect.'); return; }
             send({type:'joinGame', sessionId:id, username:myName});

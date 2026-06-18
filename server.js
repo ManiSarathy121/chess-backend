@@ -21,43 +21,64 @@ wss.on('connection', ws => {
         switch (data.type) {
             case 'createGame': {
                 const sessionId = data.sessionId;
+                const username = data.username || 'Anonymous';
+                
+                // Store player info directly on the WebSocket connection object
+                ws.sessionId = sessionId;
+                ws.playerColor = 'white';
+                ws.username = username;
+
                 games[sessionId] = {
-                    players: [ws], 
-                    playerColors: { [ws._socket.remoteAddress]: 'white' } 
+                    players: [ws]
                 };
-                ws.sessionId = sessionId; 
 
                 ws.send(JSON.stringify({
                     type: 'gameCreated',
                     sessionId: sessionId,
-                    playerColor: 'white'
+                    playerColor: 'white',
+                    username: username
                 }));
-                console.log(`Game created: ${sessionId}`);
+                console.log(`Game ${sessionId} created by ${username}`);
                 break;
             }
 
             case 'joinGame': {
                 const sessionId = data.sessionId;
+                const username = data.username || 'Anonymous';
                 const game = games[sessionId];
 
                 if (game && game.players.length === 1) {
-                    game.players.push(ws);
                     ws.sessionId = sessionId;
+                    ws.playerColor = 'black';
+                    ws.username = username;
+                    
+                    game.players.push(ws);
 
-                    game.players[0].send(JSON.stringify({
-                        type: 'gameJoined',
+                    const creator = game.players[0];
+
+                    // Notify creator (White) that opponent (Black) joined
+                    creator.send(JSON.stringify({
+                        type: 'opponentJoined',
                         sessionId: sessionId,
-                        playerColor: 'white' 
+                        opponentName: username,
+                        opponentColor: 'black'
                     }));
 
-                    game.players[1].send(JSON.stringify({
+                    // Notify joiner (Black) that they joined the creator (White)
+                    ws.send(JSON.stringify({
                         type: 'gameJoined',
                         sessionId: sessionId,
-                        playerColor: 'black' 
+                        playerColor: 'black',
+                        opponentName: creator.username,
+                        username: username
                     }));
-                    console.log(`Player joined game: ${sessionId}`);
+                    
+                    console.log(`${username} joined game: ${sessionId}`);
                 } else {
-                    ws.send(JSON.stringify({ type: 'error', message: 'Game not found or full.' }));
+                    ws.send(JSON.stringify({ 
+                        type: 'error', 
+                        message: 'Game not found or is full.' 
+                    }));
                 }
                 break;
             }
@@ -67,19 +88,64 @@ wss.on('connection', ws => {
                 const game = games[sessionId];
 
                 if (game) {
+                    // Forward the complete move payload to the other player
                     game.players.forEach(player => {
                         if (player !== ws && player.readyState === WebSocket.OPEN) {
                             player.send(JSON.stringify({
                                 type: 'moveMade',
-                                from: data.from,
-                                to: data.to,
-                                pieceChar: data.pieceChar,
-                                isCapture: data.isCapture,
-                                newBoard: data.newBoard, 
-                                newCurrentPlayer: data.playerColor === 'white' ? 'black' : 'white'
+                                ...data
                             }));
                         }
                     });
+                }
+                break;
+            }
+
+            case 'endGame': {
+                const sessionId = data.sessionId;
+                const game = games[sessionId];
+                const username = data.username || 'Player';
+
+                if (game) {
+                    game.players.forEach(player => {
+                        if (player.readyState === WebSocket.OPEN) {
+                            player.send(JSON.stringify({
+                                type: 'gameEnded',
+                                reason: 'ended',
+                                endedBy: username
+                            }));
+                        }
+                    });
+                    delete games[sessionId];
+                    console.log(`Game ${sessionId} ended by ${username}`);
+                }
+                break;
+            }
+
+            case 'resign': {
+                const sessionId = data.sessionId;
+                const game = games[sessionId];
+                const username = data.username || 'Player';
+                const playerColor = data.playerColor;
+
+                if (game) {
+                    const winnerColor = playerColor === 'white' ? 'black' : 'white';
+                    const creator = game.players[0];
+                    const joiner = game.players[1];
+                    const winnerUsername = winnerColor === 'white' ? creator.username : joiner.username;
+
+                    game.players.forEach(player => {
+                        if (player.readyState === WebSocket.OPEN) {
+                            player.send(JSON.stringify({
+                                type: 'gameEnded',
+                                reason: 'resigned',
+                                winner: winnerUsername,
+                                loser: username
+                            }));
+                        }
+                    });
+                    delete games[sessionId];
+                    console.log(`Game ${sessionId} - ${username} resigned.`);
                 }
                 break;
             }
@@ -94,7 +160,10 @@ wss.on('connection', ws => {
             game.players = game.players.filter(p => p !== ws);
 
             if (game.players.length > 0) {
-                game.players[0].send(JSON.stringify({ type: 'playerDisconnected' }));
+                game.players[0].send(JSON.stringify({ 
+                    type: 'playerDisconnected',
+                    username: ws.username || 'Opponent'
+                }));
             } else {
                 delete games[sessionId];
                 console.log(`Game ${sessionId} closed.`);
